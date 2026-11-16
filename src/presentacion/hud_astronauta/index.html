@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#05080f">
+    <title>ASTRO-MED HUD | NASA Space Apps CDSS</title>
+    <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+    <!-- ==================================================================
+         ACCESO DE TRIPULACIÓN · TERMINAL BIOMÉTRICA SIN CONTRASEÑA
+         ================================================================== -->
+    <section id="vista-login" class="pantalla-login">
+        <div class="login-fondo" aria-hidden="true"></div>
+
+        <div class="login-grid">
+            <aside class="login-hero">
+                <div class="login-hero-top">
+                    <span class="hero-orbit" aria-hidden="true">◈</span>
+                    <span id="lbl-hero-badge" class="hero-badge">NASA HUMAN RESEARCH PROGRAM · ARTEMIS II</span>
+                </div>
+
+                <h1 class="login-brand">ASTRO<span>-MED</span></h1>
+                <div class="hero-rule" aria-hidden="true"></div>
+
+                <h2 id="lbl-hero-titulo" class="hero-title">Medicina autónoma para la próxima frontera.</h2>
+                <p id="lbl-hero-sub" class="hero-sub">Telemetría biométrica, gemelo digital anatómico y triage CDSS en un solo puesto de control.</p>
+
+                <div class="hero-stats">
+                    <div class="hero-stat">
+                        <strong>04</strong>
+                        <span id="lbl-hero-stat1">Sistemas monitoreados</span>
+                    </div>
+                    <div class="hero-stat">
+                        <strong>08</strong>
+                        <span id="lbl-hero-stat2">Medidas estándar</span>
+                    </div>
+                    <div class="hero-stat">
+                        <strong>03</strong>
+                        <span id="lbl-hero-stat3">Escenarios de misión</span>
+                    </div>
+                </div>
+
+                <ul class="hero-list">
+                    <li><span>▸</span> <span data-i18n="hero_list1">Gemelo digital anatómico con estado por sistema</span></li>
+                    <li><span>▸</span> <span data-i18n="hero_list2">Triage autónomo NASA HRP · 4 peligros espaciales</span></li>
+                    <li><span>▸</span> <span data-i18n="hero_list3">Telemetría EveryWear · Medidas estándar</span></li>
+                </ul>
+
+                <div class="hero-foot">
+                    <span id="lbl-hero-pie">HUD v2.0 · Mission Control</span>
+                    <span id="login-api-estado" class="api-status">● API 8000</span>
+                </div>
+            </aside>
+
+            <div class="login-card">
+                <div class="login-card-head">
+                    <div>
+                        <p id="lbl-login-panel-eyebrow" class="eyebrow">ACCESO DE TRIPULACIÓN</p>
+                        <h2 id="lbl-login-titulo">Identificación de vuelo</h2>
+                    </div>
+                    <select id="select-idioma-login" class="select-lang" onchange="cambiarIdiomaHUD(this.value)" aria-label="Idioma de interfaz">
+                        <option value="es">ES</option>
+                        <option value="en">EN</option>
+                    </select>
+                </div>
+
+                <p id="lbl-login-subtitulo" class="subtitulo">Terminal biométrica autónoma sin contraseña para tripulación en misión.</p>
+
+                <form id="form-login" class="login-form" autocomplete="off">
+                    <label id="lbl-login-perfil" for="login-usuario">Seleccioná tu perfil de astronauta</label>
+                    <select id="login-usuario" required>
+                        <option value="admin">AST-001 — Alicia López (Comandante Médico)</option>
+                        <option value="oficial_santamaria">AST-002 — Marcos Santamaría (Oficial Científico)</option>
+                        <option value="esp_saavedra">AST-003 — Jazmín Saavedra (Especialista de Misión)</option>
+                        <option value="esp_bravo">AST-004 — David Bravo (Especialista de Misión)</option>
+                        <option value="esp_baiz">AST-005 — Zoe Baiz (Oficial Científico)</option>
+                        <option value="esp_garcia">AST-006 — David García (Especialista de Misión)</option>
+                        <option value="esp_jauregui">AST-007 — Iván Jauregui (Especialista de Misión)</option>
+                    </select>
+
+                    <button type="submit" id="btn-login-entrar" class="btn-primario">ABRIR MI HUD BIOMÉTRICO</button>
+                </form>
+
+                <div class="accesos-rapidos">
+                    <span id="lbl-acceso-rapido">Ingreso 1-Clic:</span>
+                    <div class="chips">
+                        <button type="button" onclick="ingresoDirecto('admin')" data-i18n="chip_admin">Cmd. López</button>
+                        <button type="button" onclick="ingresoDirecto('oficial_santamaria')" data-i18n="chip_santamaria">Of. Santamaría</button>
+                        <button type="button" onclick="ingresoDirecto('esp_saavedra')" data-i18n="chip_saavedra">Esp. Saavedra</button>
+                        <button type="button" onclick="ingresoDirecto('esp_bravo')" data-i18n="chip_bravo">Esp. Bravo</button>
+                        <button type="button" onclick="ingresoDirecto('esp_baiz')" data-i18n="chip_baiz">Of. Baiz</button>
+                        <button type="button" onclick="ingresoDirecto('esp_garcia')" data-i18n="chip_garcia">Esp. García</button>
+                        <button type="button" onclick="ingresoDirecto('esp_jauregui')" data-i18n="chip_jauregui">Esp. Jauregui</button>
+                    </div>
+                </div>
+
+                <p id="login-error" class="texto-error" role="alert"></p>
+
+                <p id="lbl-login-seguridad" class="login-seguridad">◈  Canal local cifrado · Sesión de un solo operador</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================================================================
+         HUD PRINCIPAL
+         ================================================================== -->
+    <main id="vista-hud" class="vista-hud oculto">
+        <header class="topbar">
+            <div class="brand-block">
+                <span class="brand-symbol" aria-hidden="true">◈</span>
+                <div class="brand-copy">
+                    <strong>ASTRO-MED <span>HUD</span></strong>
+                    <small id="lbl-operador">Conectando…</small>
+                </div>
+                <span class="live-pill"><span class="live-dot"></span> LIVE</span>
+            </div>
+
+            <div class="topbar-context">
+                <div class="context-field">
+                    <label id="lbl-sel-tripulante" for="select-tripulante">Tripulante monitoreado</label>
+                    <select id="select-tripulante" onchange="cambiarTripulanteActivo()"></select>
+                </div>
+                <div class="context-field">
+                    <label id="lbl-sel-entorno" for="select-entorno">Entorno operativo</label>
+                    <select id="select-entorno" onchange="actualizarInfoEntorno()">
+                        <option value="Transito Espacial (0G)">Tránsito espacial · 0G</option>
+                        <option value="Estacion Espacial">Estación espacial · microgravedad</option>
+                        <option value="Rover Explorador">Rover explorador · confinamiento</option>
+                        <option value="Base Planetaria">Base planetaria · EVA</option>
+                    </select>
+                </div>
+                <select id="select-idioma-hud" class="select-lang" onchange="cambiarIdiomaHUD(this.value)" aria-label="Idioma de interfaz">
+                    <option value="es">🌐 ES</option>
+                    <option value="en">🌐 EN</option>
+                </select>
+            </div>
+
+            <div class="topbar-actions">
+                <div class="streak-box">
+                    <span class="streak-icon" aria-hidden="true">🔥</span>
+                    <div>
+                        <small id="lbl-racha-titulo">RACHA VITAL</small>
+                        <strong id="lbl-racha">0 Días Sol</strong>
+                    </div>
+                </div>
+                <button id="btn-salir-hud" class="btn-ghost" type="button" onclick="cerrarSesion()">Cambiar Tripulante</button>
+            </div>
+        </header>
+
+        <div class="crew-strip">
+            <div class="crew-identity">
+                <span id="crew-avatar" class="crew-avatar" aria-hidden="true">--</span>
+                <div>
+                    <span id="lbl-crew-rol" class="strip-label">Tripulante en seguimiento</span>
+                    <strong id="crew-nombre">--</strong>
+                </div>
+                <span id="badge-global" class="status-pill nominal">NOMINAL</span>
+            </div>
+
+            <div class="strip-divider" aria-hidden="true"></div>
+
+            <div class="strip-meta">
+                <span id="lbl-meta-entorno" class="strip-label">ENTORNO</span>
+                <strong id="meta-entorno">--</strong>
+            </div>
+            <div class="strip-meta">
+                <span id="lbl-meta-lectura" class="strip-label">ÚLTIMA LECTURA</span>
+                <strong id="meta-lectura">--</strong>
+            </div>
+            <div class="strip-meta">
+                <span id="lbl-meta-mision" class="strip-label">MISIÓN</span>
+                <strong id="meta-mision">Artemis · Luna</strong>
+            </div>
+
+            <div class="strip-autonomy">
+                <span id="dot-autonomia" class="autonomy-dot"></span>
+                <span id="lbl-autonomia">Autonomía local activa</span>
+            </div>
+        </div>
+
+        <div class="hud-layout">
+            <!-- ==========================================================
+                 COLUMNA 1 · GEMELO DIGITAL ANATÓMICO
+                 ========================================================== -->
+            <section class="panel panel-anatomia">
+                <header class="panel-head">
+                    <div>
+                        <p class="eyebrow">DIGITAL TWIN</p>
+                        <h2 id="lbl-gemelo-titulo">GEMELO DIGITAL ANATÓMICO</h2>
+                    </div>
+                    <span class="panel-index">01</span>
+                </header>
+                <p id="lbl-gemelo-inst" class="panel-sub">Hacé clic en cada zona del cuerpo para inspeccionar las Medidas Estándar NASA, el impacto espacial y el triage autónomo.</p>
+
+                <div class="anatomia-plate">
+                    <div class="anatomia-plate-head">
+                        <span data-i18n="placa_sitios">SITIOS ANATÓMICOS DE MEDICIÓN</span>
+                        <span class="plate-hint" data-i18n="placa_hint">Seleccioná un sistema</span>
+                    </div>
+
+                    <svg id="svg-humano" viewBox="0 0 420 715" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="svg-title svg-desc">
+                        <title id="svg-title">Mapa anatómico interactivo de sistemas monitoreados</title>
+                        <desc id="svg-desc">Cuatro zonas clicables: neuro-psicológico, cardiovascular y radiación, metabólico e inmune, y músculo-esquelético. El color de cada zona refleja el estado evaluado por el backend.</desc>
+                        <defs>
+                            <pattern id="clinical-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+                                <path d="M 24 0 L 0 0 0 24" fill="none" stroke="#eef3f8" stroke-width="0.8" />
+                            </pattern>
+                            <linearGradient id="body-fill" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#ffffff" />
+                                <stop offset="100%" stop-color="#f1f6fa" />
+                            </linearGradient>
+                        </defs>
+
+                        <rect x="0" y="0" width="420" height="715" fill="url(#clinical-grid)" />
+
+                        <!-- Silueta anatómica (postura clínica de pie) -->
+                        <g fill="url(#body-fill)" stroke="#17263a" stroke-width="1.45" stroke-linejoin="round" stroke-linecap="round">
+                            <path d="M 210 24 C 192 24 182 39 183 58 C 184 74 189 88 197 95 L 197 114 C 197 120 184 126 164 132 C 145 137 134 148 130 168 L 116 250 L 103 336 L 94 378 C 90 390 89 406 91 416 C 92 421 95 422 97 417 L 101 399 L 100 425 C 100 430 104 431 106 426 L 108 400 L 110 424 C 111 428 114 428 115 423 L 115 397 L 119 415 C 121 418 124 417 123 411 L 119 384 L 122 365 C 125 372 128 369 127 361 L 120 338 L 138 260 L 154 196 L 156 266 C 155 294 152 325 154 352 L 158 468 L 164 568 L 166 642 L 157 678 C 155 686 160 692 170 692 C 179 692 184 687 185 679 L 187 654 L 194 562 L 200 452 L 207 372 L 210 368 L 213 372 L 220 452 L 226 562 L 233 654 L 235 679 C 236 687 241 692 250 692 C 260 692 265 686 263 678 L 254 642 L 256 568 L 262 468 L 266 352 C 268 325 265 294 264 266 L 266 196 L 282 260 L 300 338 L 293 361 C 292 369 295 372 298 365 L 301 384 L 297 411 C 296 417 299 418 301 415 L 305 397 L 305 423 C 306 428 309 428 310 424 L 312 400 L 314 426 C 316 431 320 430 320 425 L 319 399 L 323 417 C 325 422 328 421 329 416 C 331 406 330 390 326 378 L 317 336 L 304 250 L 290 168 C 286 148 275 137 256 132 C 236 126 223 120 223 114 L 223 95 C 231 88 236 74 237 58 C 238 39 228 24 210 24 Z" />
+                        </g>
+
+                        <!-- Clavículas, parrilla costal y pelvis -->
+                        <g fill="none" stroke="#cbd8e6" stroke-width="1.1" stroke-linecap="round">
+                            <path d="M 164 142 Q 187 136 206 142" />
+                            <path d="M 256 142 Q 233 136 214 142" />
+                            <path d="M 168 164 Q 186 172 204 170" />
+                            <path d="M 252 164 Q 234 172 216 170" />
+                            <path d="M 164 182 Q 186 192 204 188" />
+                            <path d="M 256 182 Q 234 192 216 188" />
+                            <path d="M 164 200 Q 186 212 204 206" />
+                            <path d="M 256 200 Q 234 212 216 206" />
+                            <path d="M 168 218 Q 186 229 202 224" />
+                            <path d="M 252 218 Q 234 229 218 224" />
+                            <path d="M 166 320 Q 184 342 210 344 Q 236 342 254 320" />
+                        </g>
+
+                        <!-- Pulmones y tráquea (referencia anatómica) -->
+                        <g opacity="0.62">
+                            <path d="M 207 104 L 207 154 M 213 104 L 213 154" stroke="#7d93a8" stroke-width="1.4" fill="none" />
+                            <path d="M 210 154 L 192 172 M 210 154 L 228 172" stroke="#7d93a8" stroke-width="1.2" fill="none" />
+                            <path d="M 203 154 C 186 150 171 168 169 194 C 167 216 172 232 186 233 C 196 234 203 224 204 208 Z" fill="#e5edf5" fill-opacity="0.8" stroke="#8fa6ba" stroke-width="1" />
+                            <path d="M 217 154 C 234 150 249 168 251 194 C 253 216 248 232 234 233 C 226 234 222 225 220 214 C 218 202 216 182 217 154 Z" fill="#e5edf5" fill-opacity="0.8" stroke="#8fa6ba" stroke-width="1" />
+                        </g>
+
+                        <!-- Sistema venoso (azul cobalto) -->
+                        <g fill="none" stroke="#2563eb" stroke-linecap="round" opacity="0.45" stroke-width="1.05">
+                            <path d="M 205 138 L 205 292" stroke-width="1.6" />
+                            <path d="M 202 138 L 198 70" />
+                            <path d="M 216 138 L 222 70" />
+                            <path d="M 204 142 Q 162 145 148 168 L 136 250 L 122 332 L 114 378" />
+                            <path d="M 215 142 Q 258 145 272 168 L 284 250 L 298 332 L 306 378" />
+                            <path d="M 205 292 L 188 330 L 180 460 L 176 585 L 174 662" />
+                            <path d="M 206 292 L 232 330 L 240 460 L 244 585 L 246 662" />
+                        </g>
+
+                        <!-- Sistema arterial (rojo carmesí) -->
+                        <g fill="none" stroke="#dc2626" stroke-linecap="round" opacity="0.6">
+                            <path d="M 212 166 C 212 152 218 150 216 168 L 211 294" stroke-width="1.9" />
+                            <path d="M 210 156 L 202 88 L 196 54" stroke-width="1.15" />
+                            <path d="M 214 156 L 220 88 L 224 56" stroke-width="1.15" />
+                            <path d="M 209 156 Q 160 150 148 178 L 140 274 L 126 344 L 112 392" stroke-width="1.3" />
+                            <path d="M 112 392 L 102 420" stroke-width="1" />
+                            <path d="M 112 392 L 111 416" stroke-width="0.9" />
+                            <path d="M 214 156 Q 260 150 272 178 L 280 274 L 292 344 L 308 392" stroke-width="1.3" />
+                            <path d="M 308 392 L 320 420" stroke-width="1" />
+                            <path d="M 308 392 L 309 416" stroke-width="0.9" />
+                            <path d="M 211 294 L 193 332 L 186 456 L 180 584 L 178 666" stroke-width="1.35" />
+                            <path d="M 211 294 L 227 332 L 234 456 L 240 584 L 242 666" stroke-width="1.35" />
+                        </g>
+
+                        <!-- Corazón -->
+                        <path d="M 211 180 C 204 176 198 184 199 196 C 200 209 211 220 221 221 C 228 221 229 208 226 196 C 224 185 218 180 211 180 Z" fill="#fecaca" stroke="#b91c1c" stroke-width="1.35" />
+
+                        <!-- ==================================================
+                             ZONA 1 · NEURO-PSICOLÓGICO
+                             ================================================== -->
+                        <g id="zona-NEURO_PSICO" class="zona-sistema nominal zona-activa" onclick="seleccionarSistema('NEURO_PSICO')" tabindex="0" role="button" aria-label="Sistema neuro-psicológico" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();seleccionarSistema('NEURO_PSICO');}">
+                            <title>Neuro-psicológico · Pulsar Cognition · Actiwatch · EveryWear</title>
+                            <ellipse class="zona-fill" cx="210" cy="66" rx="35" ry="41" />
+                            <path class="zona-line" d="M 196 55 Q 210 44 224 55 M 194 66 Q 210 54 226 66 M 198 78 Q 210 68 222 78" />
+                            <polyline class="zona-line zona-leader" points="92,66 150,66 188,60" />
+                            <circle class="zona-dot" cx="188" cy="60" r="3.2" />
+                            <text class="zona-label" x="10" y="62">NEURO</text>
+                            <text class="zona-sub" x="10" y="76">Pulsar · Actiwatch</text>
+                        </g>
+
+                        <!-- ==================================================
+                             ZONA 2 · CARDIOVASCULAR / RADIACIÓN
+                             ================================================== -->
+                        <g id="zona-CARDIO_RAD" class="zona-sistema nominal" onclick="seleccionarSistema('CARDIO_RAD')" tabindex="0" role="button" aria-label="Sistema cardiovascular y radiación" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();seleccionarSistema('CARDIO_RAD');}">
+                            <title>Cardiovascular y radiación · PA · FC · Dosimetría</title>
+                            <ellipse class="zona-fill" cx="211" cy="203" rx="42" ry="50" />
+                            <polyline class="zona-line zona-leader" points="92,205 150,205 196,205" />
+                            <circle class="zona-dot" cx="196" cy="205" r="3.2" />
+                            <text class="zona-label" x="10" y="201">CARDIO</text>
+                            <text class="zona-sub" x="10" y="215">PA · FC · RAD</text>
+                        </g>
+
+                        <!-- ==================================================
+                             ZONA 3 · METABÓLICO / INMUNE
+                             ================================================== -->
+                        <g id="zona-METABOLICO_INMUNE" class="zona-sistema nominal" onclick="seleccionarSistema('METABOLICO_INMUNE')" tabindex="0" role="button" aria-label="Sistema metabólico e inmune" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();seleccionarSistema('METABOLICO_INMUNE');}">
+                            <title>Metabólico e inmune · Glucosa · Temperatura · Microbioma</title>
+                            <rect class="zona-fill" x="167" y="258" width="86" height="82" rx="24" />
+                            <polyline class="zona-line zona-leader" points="332,300 268,300 230,300" />
+                            <circle class="zona-dot" cx="230" cy="300" r="3.2" />
+                            <text class="zona-label" x="410" y="296" text-anchor="end">METAB.</text>
+                            <text class="zona-sub" x="410" y="310" text-anchor="end">Glucosa · T°</text>
+                        </g>
+
+                        <!-- ==================================================
+                             ZONA 4 · MÚSCULO-ESQUELÉTICO
+                             ================================================== -->
+                        <g id="zona-MUSCULO_ESQUELETICO" class="zona-sistema nominal" onclick="seleccionarSistema('MUSCULO_ESQUELETICO')" tabindex="0" role="button" aria-label="Sistema músculo-esquelético" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();seleccionarSistema('MUSCULO_ESQUELETICO');}">
+                            <title>Músculo-esquelético · IMTP · ARED · Sit-to-Stand</title>
+                            <rect class="zona-fill" x="107" y="205" width="25" height="188" rx="12" />
+                            <rect class="zona-fill" x="288" y="205" width="25" height="188" rx="12" />
+                            <rect class="zona-fill" x="166" y="392" width="38" height="178" rx="17" />
+                            <rect class="zona-fill" x="216" y="392" width="38" height="178" rx="17" />
+                            <polyline class="zona-line zona-leader" points="332,520 282,520 250,520" />
+                            <circle class="zona-dot" cx="250" cy="520" r="3.2" />
+                            <text class="zona-label" x="410" y="516" text-anchor="end">MÚSCULO</text>
+                            <text class="zona-sub" x="410" y="530" text-anchor="end">IMTP · ARED</text>
+                        </g>
+                    </svg>
+
+                    <div class="plate-legend">
+                        <span><i class="legend-dot nominal"></i> <span data-i18n="estado_nominal">Nominal</span></span>
+                        <span><i class="legend-dot precaucion"></i> <span data-i18n="estado_precaucion">Precaución</span></span>
+                        <span><i class="legend-dot critico"></i> <span data-i18n="estado_critico">Crítico</span></span>
+                        <span class="legend-note" data-i18n="leyenda_nota">Color = estado del backend</span>
+                    </div>
+                </div>
+
+                <div id="caja-detalle-organo" class="detalle-organo">
+                    <div class="detalle-head">
+                        <h3 id="titulo-organo">Sistema seleccionado: vista general</h3>
+                        <span id="estado-organo" class="mini-pill nominal">NOMINAL</span>
+                    </div>
+                    <p id="desc-organo">Seleccioná una región anatómica para visualizar cómo le afectan los peligros del vuelo espacial y las Medidas Estándar de la NASA.</p>
+                    <div id="detalle-valores" class="detalle-valores"></div>
+                    <div class="detalle-foot">
+                        <span id="lbl-detalle-evidencia">EVIDENCIA SSM</span>
+                        <strong id="detalle-evidencia">—</strong>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==========================================================
+                 COLUMNA 2 · TRIAGE, CONSTANTES Y TENDENCIA
+                 ========================================================== -->
+            <section class="col-center">
+                <article id="panel-protocolo" class="triage-panel nominal" aria-live="polite">
+                    <div class="triage-head">
+                        <span class="triage-emblem" aria-hidden="true">✚</span>
+                        <div class="triage-title">
+                            <p id="lbl-triage-eyebrow" class="eyebrow">EVALUACIÓN AUTÓNOMA</p>
+                            <h2 id="triage-titulo">DIAGNÓSTICO AUTÓNOMO DE MISIÓN</h2>
+                        </div>
+                        <span id="triage-tierra" class="tag-tierra">🛡️ Autonomía Local Activa</span>
+                    </div>
+
+                    <div class="triage-body">
+                        <div class="triage-col">
+                            <span class="data-label" data-i18n="resumen_clinico">RESUMEN CLÍNICO</span>
+                            <p id="triage-resumen">Cargando telemetría del tripulante…</p>
+                        </div>
+                        <div class="triage-col triage-instruction">
+                            <span id="lbl-protocolo-guia" class="data-label">📋 PROTOCOLO PASO A PASO</span>
+                            <p id="triage-instruccion">Sin acciones correctivas pendientes.</p>
+                        </div>
+                    </div>
+
+                    <div class="triage-foot">
+                        <span><span id="lbl-triage-sistema" class="data-label">SISTEMA AFECTADO</span> <strong id="triage-sistema">—</strong></span>
+                        <span><span id="lbl-triage-nivel" class="data-label">NIVEL</span> <strong id="triage-nivel">—</strong></span>
+                    </div>
+                </article>
+
+                <article class="panel vitals-panel">
+                    <header class="panel-head">
+                        <div>
+                            <p id="lbl-vitales-eyebrow" class="eyebrow">TELEMETRÍA EN VIVO</p>
+                            <h2 id="lbl-vitales-titulo">CONSTANTES FISIOLÓGICAS</h2>
+                        </div>
+                        <span class="panel-index">02</span>
+                    </header>
+
+                    <div class="ruler-grid">
+                        <div class="ruler-card" id="gauge-pa" data-sistema="CARDIO_RAD" onclick="seleccionarSistema('CARDIO_RAD')">
+                            <div class="ruler-top">
+                                <span id="lbl-gauge-pa" class="ruler-code">PA</span>
+                                <span class="ruler-dot" aria-hidden="true"></span>
+                            </div>
+                            <div class="ruler-value"><strong id="kpi-presion">-- / --</strong><small>mmHg</small></div>
+                            <div class="ruler-track" id="track-pa" aria-hidden="true"></div>
+                            <div id="sub-pa" class="ruler-sub">PAM -- mmHg</div>
+                        </div>
+
+                        <div class="ruler-card" id="gauge-fc" data-sistema="CARDIO_RAD" onclick="seleccionarSistema('CARDIO_RAD')">
+                            <div class="ruler-top">
+                                <span id="lbl-gauge-fc" class="ruler-code">FC</span>
+                                <span class="ruler-dot" aria-hidden="true"></span>
+                            </div>
+                            <div class="ruler-value"><strong id="kpi-fc">--</strong><small>lpm</small></div>
+                            <div class="ruler-track" id="track-fc" aria-hidden="true"></div>
+                            <div id="sub-fc" class="ruler-sub">Ref. 60–100 lpm</div>
+                        </div>
+
+                        <div class="ruler-card" id="gauge-glucosa" data-sistema="METABOLICO_INMUNE" onclick="seleccionarSistema('METABOLICO_INMUNE')">
+                            <div class="ruler-top">
+                                <span id="lbl-gauge-glucosa" class="ruler-code">GLU</span>
+                                <span class="ruler-dot" aria-hidden="true"></span>
+                            </div>
+                            <div class="ruler-value"><strong id="kpi-glucosa">--</strong><small>mg/dL</small></div>
+                            <div class="ruler-track" id="track-glucosa" aria-hidden="true"></div>
+                            <div id="sub-glucosa" class="ruler-sub">Ref. 70–140 mg/dL</div>
+                        </div>
+
+                        <div class="ruler-card" id="gauge-temp" data-sistema="METABOLICO_INMUNE" onclick="seleccionarSistema('METABOLICO_INMUNE')">
+                            <div class="ruler-top">
+                                <span id="lbl-gauge-temp" class="ruler-code">T°</span>
+                                <span class="ruler-dot" aria-hidden="true"></span>
+                            </div>
+                            <div class="ruler-value"><strong id="kpi-temp">--</strong><small>°C</small></div>
+                            <div class="ruler-track" id="track-temp" aria-hidden="true"></div>
+                            <div id="sub-temp" class="ruler-sub">Ref. 36.0–37.4 °C</div>
+                        </div>
+
+                        <div class="ruler-card" id="gauge-sueno" data-sistema="NEURO_PSICO" onclick="seleccionarSistema('NEURO_PSICO')">
+                            <div class="ruler-top">
+                                <span id="lbl-gauge-sueno" class="ruler-code">SUEÑO</span>
+                                <span class="ruler-dot" aria-hidden="true"></span>
+                            </div>
+                            <div class="ruler-value"><strong id="kpi-sueno">--</strong><small>h</small></div>
+                            <div class="ruler-track" id="track-sueno" aria-hidden="true"></div>
+                            <div id="sub-sueno" class="ruler-sub">Objetivo 7–8 h</div>
+                        </div>
+
+                        <div class="ruler-card" id="gauge-ejercicio" data-sistema="MUSCULO_ESQUELETICO" onclick="seleccionarSistema('MUSCULO_ESQUELETICO')">
+                            <div class="ruler-top">
+                                <span id="lbl-gauge-ejercicio" class="ruler-code">ARED</span>
+                                <span class="ruler-dot" aria-hidden="true"></span>
+                            </div>
+                            <div class="ruler-value"><strong id="kpi-ejercicio">--</strong><small>min</small></div>
+                            <div class="ruler-track" id="track-ejercicio" aria-hidden="true"></div>
+                            <div id="sub-ejercicio" class="ruler-sub">Objetivo ≥ 30 min</div>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="panel chart-panel">
+                    <header class="panel-head">
+                        <div>
+                            <p class="eyebrow" data-i18n="grafico_eyebrow">TENDENCIA · 15 DÍAS SOL</p>
+                            <h3 id="lbl-grafico-titulo">EVOLUCIÓN TEMPORAL DE INDICADORES</h3>
+                        </div>
+                        <select id="select-metrica-grafico" class="select-metric" onchange="dibujarGraficoEvolucion()">
+                            <option value="frecuencia_cardiaca" data-i18n="metrica_fc">Frecuencia cardíaca (BPM)</option>
+                            <option value="presion_sistolica" data-i18n="metrica_sis">Presión sistólica (mmHg)</option>
+                            <option value="glucosa_mg_dl" data-i18n="metrica_glu">Glucosa (mg/dL)</option>
+                            <option value="horas_sueno" data-i18n="metrica_sueno">Sueño (h)</option>
+                            <option value="estado_animo" data-i18n="metrica_animo">Ánimo (1–5)</option>
+                        </select>
+                    </header>
+                    <div class="chart-wrap">
+                        <canvas id="canvas-evolucion" aria-label="Gráfico de evolución temporal"></canvas>
+                    </div>
+                    <div id="chart-legend" class="chart-legend"></div>
+                </article>
+            </section>
+
+            <!-- ==========================================================
+                 COLUMNA 3 · OPERACIONES Y MEDIDAS ESTÁNDAR
+                 ========================================================== -->
+            <aside class="col-right">
+                <article class="panel operations-panel">
+                    <header class="panel-head">
+                        <div>
+                            <p class="eyebrow">OPERACIONES DE MISIÓN</p>
+                            <h2 id="lbl-mision-activa-tit">CAMBIAR MISIÓN ESPACIAL</h2>
+                        </div>
+                        <span class="panel-index">03</span>
+                    </header>
+                    <p id="lbl-mision-activa-sub" class="panel-sub">Conmutá la base de datos entre los tres escenarios interplanetarios.</p>
+
+                    <div class="mission-list">
+                        <button id="btn-mision-luna" class="mission-btn luna" type="button" onclick="cambiarMision('ARTEMIS_LUNA')">
+                            <span class="mission-icon">🌕</span>
+                            <span class="mission-copy"><strong>Artemis</strong><small data-i18n="mision_luna_sub">Luna · 384.400 km</small></span>
+                            <span class="mission-arrow">→</span>
+                        </button>
+                        <button id="btn-mision-marte" class="mission-btn marte" type="button" onclick="cambiarMision('ARES_MARTE')">
+                            <span class="mission-icon">🔴</span>
+                            <span class="mission-copy"><strong>Ares</strong><small data-i18n="mision_marte_sub">Marte · 225 M km</small></span>
+                            <span class="mission-arrow">→</span>
+                        </button>
+                        <button id="btn-mision-europa" class="mission-btn europa" type="button" onclick="cambiarMision('EUROPA_JUPITER')">
+                            <span class="mission-icon">❄️</span>
+                            <span class="mission-copy"><strong>Crio-Europa</strong><small data-i18n="mision_europa_sub">Europa · 628 M km</small></span>
+                            <span class="mission-arrow">→</span>
+                        </button>
+                    </div>
+
+                    <hr class="divider">
+
+                    <header class="panel-head compact">
+                        <div>
+                            <p class="eyebrow">NASA 5 HAZARDS</p>
+                            <h2 id="lbl-sim-peligros-tit">SIMULADOR DE PELIGROS</h2>
+                        </div>
+                    </header>
+                    <p id="lbl-sim-peligros-sub" class="panel-sub">Dispará una anomalía en vivo para evaluar la respuesta del CDSS.</p>
+
+                    <div class="hazard-grid">
+                        <button id="btn-sim-rad" class="hazard-btn rad" type="button" onclick="simularCrisis('TORMENTA_SOLAR')">
+                            <span>☢️</span><strong data-i18n="sim_rad_tit">Tormenta Solar</strong><small data-i18n="sim_rad_sub">Radiación · 0G</small>
+                        </button>
+                        <button id="btn-sim-psy" class="hazard-btn psy" type="button" onclick="simularCrisis('CONFINAMIENTO_ROVER')">
+                            <span>🧠</span><strong data-i18n="sim_psy_tit">Pulsar / Fatiga</strong><small data-i18n="sim_psy_sub">Confinamiento rover</small>
+                        </button>
+                        <button id="btn-sim-met" class="hazard-btn met" type="button" onclick="simularCrisis('HIPOGLUCEMIA_EVA')">
+                            <span>🩸</span><strong data-i18n="sim_met_tit">Hipoglucemia</strong><small data-i18n="sim_met_sub">Fiebre · EVA</small>
+                        </button>
+                        <button id="btn-sim-mus" class="hazard-btn mus" type="button" onclick="simularCrisis('ATROFIA_CERO_G')">
+                            <span>🦴</span><strong data-i18n="sim_mus_tit">Déficit IMTP</strong><small data-i18n="sim_mus_sub">Atrofia · 0G</small>
+                        </button>
+                    </div>
+                </article>
+
+                <article class="panel measures-panel">
+                    <header class="panel-head">
+                        <div>
+                            <p id="lbl-ssm-titulo" class="eyebrow">NASA STANDARD MEASURES</p>
+                            <h2 id="lbl-ssm-sub">MEDIDAS ESTÁNDAR · 4 SISTEMAS</h2>
+                        </div>
+                        <span class="panel-index">04</span>
+                    </header>
+
+                    <div class="measure-list">
+                        <article class="measure-item" data-system="NEURO_PSICO" onclick="seleccionarSistema('NEURO_PSICO')">
+                            <div class="measure-icon neuro">N</div>
+                            <div class="measure-body">
+                                <div class="measure-top">
+                                    <div>
+                                        <h3 id="lbl-ssm-neuro-tit">Sueño, cognición y ánimo</h3>
+                                        <span id="lbl-ssm-neuro-sub">Actiwatch · Pulsar · EveryWear</span>
+                                    </div>
+                                    <span id="estado-NEURO_PSICO" class="mini-pill nominal">NOMINAL</span>
+                                </div>
+                                <div class="measure-values">
+                                    <div><span id="lbl-ssm-sueno">Sueño</span><strong id="ssm-sueno">-- h</strong><small data-i18n="ssm_actigrafia">Actigrafía</small></div>
+                                    <div><span id="lbl-ssm-animo">Ánimo</span><strong id="ssm-animo">-- / 5</strong><small>EveryWear</small></div>
+                                </div>
+                                <div class="measure-evidence"><span data-i18n="ref">REF</span> <strong id="ssm-evid-neuro">—</strong></div>
+                            </div>
+                        </article>
+
+                        <article class="measure-item" data-system="CARDIO_RAD" onclick="seleccionarSistema('CARDIO_RAD')">
+                            <div class="measure-icon cardio">C</div>
+                            <div class="measure-body">
+                                <div class="measure-top">
+                                    <div>
+                                        <h3 id="lbl-ssm-cardio-tit">Cardiovascular y radiación</h3>
+                                        <span id="lbl-ssm-cardio-sub">PA · FC · Dosimetría</span>
+                                    </div>
+                                    <span id="estado-CARDIO_RAD" class="mini-pill nominal">NOMINAL</span>
+                                </div>
+                                <div class="measure-values three">
+                                    <div><span id="lbl-ssm-pa">Presión</span><strong id="ssm-pa">-- / --</strong><small>mmHg</small></div>
+                                    <div><span id="lbl-ssm-fc">Pulso</span><strong id="ssm-fc">--</strong><small>lpm</small></div>
+                                    <div><span id="lbl-ssm-rad">Radiación</span><strong id="ssm-rad">--</strong><small>mSv</small></div>
+                                </div>
+                                <div class="measure-evidence"><span data-i18n="ref">REF</span> <strong id="ssm-evid-cardio">—</strong></div>
+                            </div>
+                        </article>
+
+                        <article class="measure-item" data-system="METABOLICO_INMUNE" onclick="seleccionarSistema('METABOLICO_INMUNE')">
+                            <div class="measure-icon met">M</div>
+                            <div class="measure-body">
+                                <div class="measure-top">
+                                    <div>
+                                        <h3 id="lbl-ssm-metabolico-tit">Metabólico e inmune</h3>
+                                        <span id="lbl-ssm-metabolico-sub">Glucosa · Fiebre · Microbioma</span>
+                                    </div>
+                                    <span id="estado-METABOLICO_INMUNE" class="mini-pill nominal">NOMINAL</span>
+                                </div>
+                                <div class="measure-values">
+                                    <div><span id="lbl-ssm-glu">Glucosa</span><strong id="ssm-glu">--</strong><small>mg/dL</small></div>
+                                    <div><span id="lbl-ssm-temp">Temperatura</span><strong id="ssm-temp">--</strong><small>°C</small></div>
+                                </div>
+                                <div class="measure-evidence"><span data-i18n="ref">REF</span> <strong id="ssm-evid-metabolico">—</strong></div>
+                            </div>
+                        </article>
+
+                        <article class="measure-item" data-system="MUSCULO_ESQUELETICO" onclick="seleccionarSistema('MUSCULO_ESQUELETICO')">
+                            <div class="measure-icon mus">M</div>
+                            <div class="measure-body">
+                                <div class="measure-top">
+                                    <div>
+                                        <h3 id="lbl-ssm-musculo-tit">Músculo-esquelético</h3>
+                                        <span id="lbl-ssm-musculo-sub">IMTP · ARED · Sensoriomotor</span>
+                                    </div>
+                                    <span id="estado-MUSCULO_ESQUELETICO" class="mini-pill nominal">NOMINAL</span>
+                                </div>
+                                <div class="measure-values">
+                                    <div><span id="lbl-ssm-ejer">Ejercicio</span><strong id="ssm-ejer">--</strong><small>min ARED</small></div>
+                                    <div><span id="lbl-ssm-evid">Evidencia</span><strong id="ssm-evid-musculo" class="small-value">—</strong><small>SSM</small></div>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </article>
+            </aside>
+        </div>
+
+        <!-- ==============================================================
+             REGISTRO EVERYWEAR Y BOTIQUÍN
+             ============================================================== -->
+        <section id="seccion-registro" class="registro-layout">
+            <article class="panel form-panel">
+                <header class="panel-head">
+                    <div>
+                        <p id="lbl-registro-eyebrow" class="eyebrow" data-i18n="registro_eyebrow">EVERYWEAR · ENTRY</p>
+                        <h2 id="lbl-form-tit">REGISTRAR MEDIDAS ESTÁNDAR</h2>
+                    </div>
+                    <span class="panel-index">05</span>
+                </header>
+                <p id="lbl-form-sub" class="panel-sub">Cargá la lectura diaria para ejecutar el triage autónomo y actualizar el gemelo digital.</p>
+
+                <form id="form-telemetria" class="telemetry-form">
+                    <div class="form-section">
+                        <h3 id="lbl-form-hemo">Hemodinámica</h3>
+                        <div class="form-grid three">
+                            <div class="field">
+                                <label id="lbl-in-sis" for="in-sistolica">Sistólica (mmHg)</label>
+                                <input type="number" id="in-sistolica" value="118" min="40" max="260" required>
+                            </div>
+                            <div class="field">
+                                <label id="lbl-in-dia" for="in-diastolica">Diastólica (mmHg)</label>
+                                <input type="number" id="in-diastolica" value="76" min="20" max="160" required>
+                            </div>
+                            <div class="field">
+                                <label id="lbl-in-fc" for="in-fc">Pulso (BPM)</label>
+                                <input type="number" id="in-fc" value="72" min="25" max="240" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3 id="lbl-form-meta">Metabólico</h3>
+                        <div class="form-grid">
+                            <div class="field">
+                                <label id="lbl-in-glu" for="in-glucosa">Glucosa (mg/dL)</label>
+                                <input type="number" step="0.1" id="in-glucosa" value="92.0" min="20" max="600" required>
+                            </div>
+                            <div class="field">
+                                <label id="lbl-in-temp" for="in-temp">Temperatura (°C)</label>
+                                <input type="number" step="0.1" id="in-temp" value="36.6" min="32" max="43" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3 id="lbl-form-estilo">Sueño, ánimo y ejercicio</h3>
+                        <div class="form-grid four">
+                            <div class="field">
+                                <label id="lbl-in-sueno" for="in-sueno">Sueño (h)</label>
+                                <input type="number" step="0.5" id="in-sueno" value="7.5" min="0" max="24" required>
+                            </div>
+                            <div class="field">
+                                <label id="lbl-in-animo" for="in-animo">Ánimo (1–5)</label>
+                                <input type="number" id="in-animo" value="5" min="1" max="5" required>
+                            </div>
+                            <div class="field">
+                                <label id="lbl-in-ejer" for="in-ejercicio">Ejercicio ARED (min)</label>
+                                <input type="number" id="in-ejercicio" value="60" min="0" max="300" required>
+                            </div>
+                            <div class="field">
+                                <label id="lbl-in-rad" for="in-rad">Radiación (mSv)</label>
+                                <input type="number" step="0.1" id="in-rad" value="0.2" min="0" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3 id="lbl-form-registro">Registro de Medida Estándar</h3>
+                        <div class="form-grid">
+                            <div class="field">
+                                <label id="lbl-in-evid" for="in-evidencia">Estudio / Medida Estándar</label>
+                                <select id="in-evidencia">
+                                    <option value="everywear_encuesta_diaria.dat">Encuesta EveryWear Sueño/Ánimo</option>
+                                    <option value="pulsar_cognition_10tests.dat">Batería Pulsar Cognition (10 pruebas)</option>
+                                    <option value="actiwatch_spectrum_sleep.dat">Actigrafía Actiwatch Spectrum Plus</option>
+                                    <option value="cinetosis_escala_0_20.dat">Cuestionario Cinetosis (Escala 0-20)</option>
+                                    <option value="eco_carotida_intima_media.png">Ecografía Carótida (Íntima-Media)</option>
+                                    <option value="imtp_traccion_isometrica_muslo.dat">Fuerza Isométrica Medio Muslo (IMTP)</option>
+                                    <option value="sit_to_stand_tandem_walk.mp4">Prueba Sensoriomotora (Sit-to-Stand / Tándem)</option>
+                                    <option value="panel_inmune_saliva_microbioma.dat">Muestra Saliva / Microbioma / Tubo ACD</option>
+                                </select>
+                            </div>
+                            <div class="field">
+                                <label id="lbl-in-insumo" for="in-insumo">Insumo del botiquín (opcional)</label>
+                                <div class="kit-apply">
+                                    <select id="in-insumo">
+                                        <option value="">— Ninguno —</option>
+                                    </select>
+                                    <input type="number" step="1" id="in-cant-insumo" value="0" min="0" aria-label="Cantidad de insumo">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="btn-submit-tel" class="btn-primario btn-submit">REGISTRAR Y EJECUTAR TRIAGE</button>
+                </form>
+            </article>
+
+            <article class="panel kit-panel">
+                <header class="panel-head">
+                    <div>
+                        <p class="eyebrow" data-i18n="botiquin_eyebrow">INVENTARIO A BORDO</p>
+                        <h2 id="lbl-botiquin-tit">STOCK DEL BOTIQUÍN</h2>
+                    </div>
+                    <span class="panel-index">06</span>
+                </header>
+                <p id="lbl-botiquin-sub" class="panel-sub">Insumos disponibles para el protocolo médico de la misión.</p>
+                <ul id="lista-botiquin" class="lista-botiquin"></ul>
+            </article>
+        </section>
+
+        <footer class="hud-footer">
+            <span data-i18n="footer_1">ASTRO-MED · NASA Space Apps · CDSS de vuelo</span>
+            <span data-i18n="footer_2">NASA HUMAN RESEARCH PROGRAM · STANDARD MEASURES</span>
+        </footer>
+    </main>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <script src="app_web.js"></script>
+</body>
+</html>
